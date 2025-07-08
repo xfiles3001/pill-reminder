@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Simple pill schedule planner to track your medications."
+    />
+    <title>Pill Schedule Planner</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 600px;
+        margin: auto;
+      }
+
+      input,
+      button,
+      select {
+        padding: 8px;
+        margin: 5px 0;
+        width: 100%;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+      }
+
+      label {
+        display: flex;
+      }
+      p {
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pill Schedule Planner</h1>
+    <label>Pill Name: <input type="text" id="pillName" /></label>
+    <label>Days of the Week:</label>
+    <div class="container">
+      <div>
+        <label
+          ><p>Monday</p>
+          <input type="checkbox" value="Mon"
+        /></label>
+      </div>
+
+      <label
+        ><p>Tuesday</p>
+        <input type="checkbox" value="Tue" />
+      </label>
+      <label
+        ><p>Wednesday</p>
+        <input type="checkbox" value="Wed" />
+      </label>
+      <label
+        ><p>Thursday</p>
+        <input type="checkbox" value="Thu" />
+      </label>
+      <label
+        ><p>Friday</p>
+        <input type="checkbox" value="Fri" />
+      </label>
+      <label
+        ><p>Saturday</p>
+        <input type="checkbox" value="Sat" />
+      </label>
+      <label
+        ><p>Sunday</p>
+        <input type="checkbox" value="Sun" />
+      </label>
+    </div>
+    <label>Times (comma separated, e.g. 08:00, 20:00):</label>
+    <input type="text" id="times" placeholder="08:00, 20:00" />
+    <button onclick="generateSchedule()">Generate Schedule</button>
+    <button onclick="downloadPDF()">Download PDF</button>
+    <div id="result"></div>
+
+    <!-- JS libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+    <script>
+      function generateSchedule() {
+        const name = document.getElementById("pillName").value;
+        const times = document
+          .getElementById("times")
+          .value.split(",")
+          .map((t) => t.trim());
+        const days = Array.from(
+          document.querySelectorAll("input[type=checkbox]:checked")
+        ).map((cb) => cb.value);
+
+        if (!name || times.length === 0 || days.length === 0) {
+          alert("Please fill all fields.");
+          return;
+        }
+
+        let html =
+          "<div id='scheduleArea'><h2>Schedule</h2><table><tr><th>Day</th><th>Time</th><th>Pill</th></tr>";
+        days.forEach((day) => {
+          times.forEach((time) => {
+            html += `<tr><td>${day}</td><td>${time}</td><td>${name}</td></tr>`;
+          });
+        });
+        html += "</table></div>";
+        document.getElementById("result").innerHTML = html;
+      }
+
+      function downloadPDF() {
+        const element = document.getElementById("result");
+        if (!element.innerHTML.trim()) {
+          alert("Please generate schedule first!");
+          return;
+        }
+        html2pdf().from(element).save("pill_schedule.pdf");
+      }
+    </script>
+  </body>
+</html>
